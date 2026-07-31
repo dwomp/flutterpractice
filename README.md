@@ -16,7 +16,7 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
-## Reference
+## 내가 본 강의는 이거쥐
 
 - 인프런 강의: https://www.inflearn.com/course/flutter-netflix-clone-app/dashboard?cid=324976
 
