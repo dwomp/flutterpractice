@@ -15,7 +15,7 @@ class MoreScreen extends StatelessWidget {
               padding: EdgeInsets.only(top: 50),
               child: CircleAvatar(
                 radius: 100,
-                backgroundImage: AssetImage('images/logo.png'),
+                backgroundImage: AssetImage('assets/images/logo.png'),
               ),
             ),
             Container(

@@ -7,62 +7,110 @@ class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
 
   @override
-  _SearchScreenState createState() => _SearchScreenState();
+  State<SearchScreen> createState() => _SearchScreenState();
 }
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _filter = TextEditingController();
-  FocusNode focusNode = FocusNode();
+  final FocusNode focusNode = FocusNode();
+
   String _searchText = "";
 
-  _SearchScreenState() {
+  @override
+  void initState() {
+    super.initState();
+
     _filter.addListener(() {
       setState(() {
-        _searchText = _filter.text;
+        _searchText = _filter.text.toLowerCase();
       });
     });
   }
 
+  @override
+  void dispose() {
+    _filter.dispose();
+    focusNode.dispose();
+    super.dispose();
+  }
+
   Widget _buildBody(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: FirebaseFirestore.instance.collection('movie').snapshots(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) return LinearProgressIndicator();
-        return _buildList(context, snapshot.data!.docs);
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Expanded(
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return const Expanded(
+            child: Center(
+              child: Text("데이터를 불러오지 못했습니다."),
+            ),
+          );
+        }
+
+        final docs = snapshot.data?.docs ?? [];
+
+        return _buildList(context, docs);
       },
     );
   }
 
-  Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
-    List<DocumentSnapshot> searchResults = [];
-    for (DocumentSnapshot d in snapshot) {
-      if (d.data.toString().contains(_searchText)) {
-        searchResults.add(d);
+  Widget _buildList(
+    BuildContext context,
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> docs,
+  ) {
+    final searchResults = docs.where((doc) {
+      final data = doc.data();
+
+      final title =
+          (data['title'] ?? '').toString().toLowerCase();
+
+      final keyword =
+          (data['keyword'] ?? '').toString().toLowerCase();
+
+      if (_searchText.isEmpty) {
+        return true;
       }
-    }
+
+      return title.contains(_searchText) ||
+          keyword.contains(_searchText);
+    }).toList();
+
     return Expanded(
       child: GridView.count(
         crossAxisCount: 3,
         childAspectRatio: 1 / 1.5,
-        padding: EdgeInsets.all(3),
+        padding: const EdgeInsets.all(3),
         children: searchResults
-            .map((data) => _buildListItem(context, data))
+            .map((doc) => _buildListItem(context, doc))
             .toList(),
       ),
     );
   }
 
-  Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
-    final movie = Movie.fromSnapshot(data);
+  Widget _buildListItem(
+    BuildContext context,
+    DocumentSnapshot<Map<String, dynamic>> doc,
+  ) {
+    final movie = Movie.fromSnapshot(doc);
+
     return InkWell(
-      child: Image.network(movie.poster),
+      child: Image.network(
+        movie.poster,
+        fit: BoxFit.cover,
+      ),
       onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute<Null>(
+        Navigator.push(
+          context,
+          MaterialPageRoute(
             fullscreenDialog: true,
-            builder: (BuildContext context) {
-              return DetailScreen(movie: movie);
-            },
+            builder: (_) => DetailScreen(movie: movie),
           ),
         );
       },
@@ -71,78 +119,71 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          Padding(padding: EdgeInsets.all(30)),
-          Container(
-            color: Colors.black,
-            padding: EdgeInsets.fromLTRB(5, 10, 5, 10),
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  flex: 6,
-                  child: TextField(
-                    focusNode: focusNode,
-                    style: TextStyle(fontSize: 15),
-                    autofocus: true,
-                    controller: _filter,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white12,
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: Colors.white60,
-                        size: 20,
-                      ),
-                      suffixIcon: focusNode.hasFocus
-                          ? IconButton(
-                              icon: Icon(Icons.cancel, size: 20),
-                              onPressed: () {
-                                setState(() {
-                                  _filter.clear();
-                                  _searchText = "";
-                                });
-                              },
-                            )
-                          : Container(),
-                      hintText: '검색',
-                      labelStyle: TextStyle(color: Colors.white),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.transparent),
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.transparent),
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.transparent),
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
+    return Column(
+      children: [
+        const SizedBox(height: 30),
+        Container(
+          color: Colors.black,
+          padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
+          child: Row(
+            children: [
+              Expanded(
+                flex: 6,
+                child: TextField(
+                  controller: _filter,
+                  focusNode: focusNode,
+                  autofocus: true,
+                  style: const TextStyle(fontSize: 15),
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white12,
+                    hintText: '검색',
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      color: Colors.white60,
+                    ),
+                    suffixIcon: _searchText.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.cancel),
+                            onPressed: () {
+                              _filter.clear();
+                            },
+                          )
+                        : null,
+                    focusedBorder: OutlineInputBorder(
+                      borderSide:
+                          const BorderSide(color: Colors.transparent),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide:
+                          const BorderSide(color: Colors.transparent),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    border: OutlineInputBorder(
+                      borderSide:
+                          const BorderSide(color: Colors.transparent),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                 ),
-                focusNode.hasFocus
-                    ? Expanded(
-                        child: ElevatedButton(
-                          child: Text('취소'),
-                          onPressed: () {
-                            setState(() {
-                              _filter.clear();
-                              _searchText = "";
-                              focusNode.unfocus();
-                            });
-                          },
-                        ),
-                      )
-                    : Expanded(flex: 0, child: Container()),
-              ],
-            ),
+              ),
+              focusNode.hasFocus
+                  ? Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _filter.clear();
+                          focusNode.unfocus();
+                        },
+                        child: const Text('취소'),
+                      ),
+                    )
+                  : const SizedBox(),
+            ],
           ),
-          _buildBody(context),
-        ],
-      ),
+        ),
+        _buildBody(context),
+      ],
     );
   }
 }

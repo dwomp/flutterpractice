@@ -20,47 +20,42 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: movieStream,
-      builder: (
-        BuildContext context,
-        AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot,
-      ) {
-        if (snapshot.hasError) {
-          return const Center(
-            child: Text('영화 정보를 불러오지 못했습니다.'),
-          );
-        }
+      builder:
+          (
+            BuildContext context,
+            AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot,
+          ) {
+            if (snapshot.hasError) {
+              return const Center(child: Text('영화 정보를 불러오지 못했습니다.'));
+            }
 
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-        final documents = snapshot.data?.docs ?? [];
+            final documents = snapshot.data?.docs ?? [];
 
-        final movies = documents
-            .map((document) => Movie.fromSnapshot(document))
-            .toList();
+            final movies = documents
+                .map((document) => Movie.fromSnapshot(document))
+                .toList();
 
-        if (movies.isEmpty) {
-          return const Center(
-            child: Text('등록된 영화가 없습니다.'),
-          );
-        }
+            if (movies.isEmpty) {
+              return const Center(child: Text('등록된 영화가 없습니다.'));
+            }
 
-        return ListView(
-          children: <Widget>[
-            Stack(
+            return ListView(
               children: <Widget>[
-                CarouselImage(movies: movies),
-                const TopBar(),
+                Stack(
+                  children: <Widget>[
+                    CarouselImage(movies: movies),
+                    const TopBar(),
+                  ],
+                ),
+                CircleSlider(movies: movies),
+                BoxSlider(movies: movies),
               ],
-            ),
-            CircleSlider(movies: movies),
-            BoxSlider(movies: movies),
-          ],
-        );
-      },
+            );
+          },
     );
   }
 }
@@ -76,22 +71,13 @@ class TopBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Image.asset(
-            'images/logo.png',
+            'assets/images/logo.png',
             fit: BoxFit.contain,
             height: 25,
           ),
-          const Text(
-            'TV 프로그램',
-            style: TextStyle(fontSize: 14),
-          ),
-          const Text(
-            '영화',
-            style: TextStyle(fontSize: 14),
-          ),
-          const Text(
-            '내가 찜한 콘텐츠',
-            style: TextStyle(fontSize: 14),
-          ),
+          const Text('TV 프로그램', style: TextStyle(fontSize: 14)),
+          const Text('영화', style: TextStyle(fontSize: 14)),
+          const Text('내가 찜한 콘텐츠', style: TextStyle(fontSize: 14)),
         ],
       ),
     );

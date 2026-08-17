@@ -42,12 +42,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyDmW0RP7_c8v6nDDaSmvAG4AjMidcq8Ch4',
-    appId: '1:1064991589177:web:e0f16e15590736c83fdee8',
+    appId: '1:1064991589177:web:5d0deced02afea263fdee8',
     messagingSenderId: '1064991589177',
     projectId: 'flutterpractice-371aa',
     authDomain: 'flutterpractice-371aa.firebaseapp.com',
     storageBucket: 'flutterpractice-371aa.firebasestorage.app',
-    measurementId: 'G-78GLK9LFCX',
+    measurementId: 'G-YY49C4FHXM',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -57,7 +57,6 @@ class DefaultFirebaseOptions {
     projectId: 'flutterpractice-371aa',
     storageBucket: 'flutterpractice-371aa.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCdCpOV7gIm652vpAkLUe0ja7SeIk2vYeU',
     appId: '1:1064991589177:ios:9663849a662e32083fdee8',
@@ -66,7 +65,6 @@ class DefaultFirebaseOptions {
     storageBucket: 'flutterpractice-371aa.firebasestorage.app',
     iosBundleId: 'com.example.netflixClone',
   );
-
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyCdCpOV7gIm652vpAkLUe0ja7SeIk2vYeU',
     appId: '1:1064991589177:ios:9663849a662e32083fdee8',

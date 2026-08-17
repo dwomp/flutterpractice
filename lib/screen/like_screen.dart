@@ -84,7 +84,11 @@ class _LikeScreenState extends State<LikeScreen> {
           padding: const EdgeInsets.fromLTRB(20, 27, 20, 7),
           child: Row(
             children: <Widget>[
-              Image.asset('images/logo.png', fit: BoxFit.contain, height: 25),
+              Image.asset(
+                'assets/images/logo.png',
+                fit: BoxFit.contain,
+                height: 25,
+              ),
               const SizedBox(width: 30),
               const Text('내가 찜한 콘텐츠', style: TextStyle(fontSize: 14)),
             ],

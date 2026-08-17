@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "1064991589177",
-    "project_id": "flutterpractice-371aa",
-    "storage_bucket": "flutterpractice-371aa.firebasestorage.app"
+    "project_number": "357912816034",
+    "project_id": "fsghjbk",
+    "storage_bucket": "fsghjbk.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1064991589177:android:5688c1dc7a988e353fdee8",
+        "mobilesdk_app_id": "1:357912816034:android:82463099cbec07fe346afb",
         "android_client_info": {
-          "package_name": "com.example.netflix_clone"
+          "package_name": "Netflix.clone"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAEuLG7wjSfjaWOf8GfsDAFJhyRdez1Pt4"
+          "current_key": "AIzaSyAUZ7JY21xoPZ3DhP21VukQxJeCme8_vAY"
         }
       ],
       "services": {
